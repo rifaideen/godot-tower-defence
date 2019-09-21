@@ -1,0 +1,115 @@
+[gd_scene load_steps=9 format=2]
+
+[ext_resource path="res://Scenes/Towers/Tower.gd" type="Script" id=1]
+[ext_resource path="res://Scenes/Weapons/Bullet/Bullet.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Scenes/Towers/Missile/MissilePlaceholder.tscn" type="PackedScene" id=3]
+[ext_resource path="res://resources/tower-objects/defense-tower-1/defense-tower.png" type="Texture" id=4]
+
+[sub_resource type="CircleShape2D" id=1]
+radius = 200.0
+
+[sub_resource type="Curve2D" id=2]
+_data = {
+"points": PoolVector2Array( 0, 0, 0, 0, -84.3723, -0.260544, 0, 0, 0, 0, 119.622, -0.957573, 0, 0, 0, 0, 104.759, -22.0781, 0, 0, 0, 0, 104.057, 19.4989, 0, 0, 0, 0, 118.697, -0.110962 )
+}
+
+[sub_resource type="Curve2D" id=3]
+_data = {
+"points": PoolVector2Array( 0, 0, 0, 0, -129.27, 0.967705, 0, 0, 0, 0, 119.839, 0.0344238, 0, 0, 0, 0, 100.565, -20.4575, 0, 0, 0, 0, 140.737, 27.6275, 0, 0, 0, 0, 118.622, -0.777138, 0, 0, 0, 0, 139.925, -20.6604, 0, 0, 0, 0, 101.782, 19.309 )
+}
+
+[sub_resource type="Animation" id=4]
+resource_name = "patrol"
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:rotation_degrees")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = false
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.5, 1 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ 0.0, 90.0, 0.0 ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("BulletPointer:rotation_degrees")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = false
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.5, 1 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ 0.0, 90.0, 0.0 ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("AnimatableSprite:rotation_degrees")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0, 0.5, 1 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ 90.0002, 180.0, 90.0002 ]
+}
+
+[node name="Tower" type="Node2D"]
+z_index = 1
+script = ExtResource( 1 )
+Bullet = ExtResource( 2 )
+BasementPlaceholder = ExtResource( 3 )
+
+[node name="MissileUnderPlaceholder" parent="." instance=ExtResource( 3 )]
+visible = false
+scale = Vector2( 0.8, 0.8 )
+
+[node name="sprite" type="Sprite" parent="."]
+visible = false
+rotation = 1.5708
+scale = Vector2( 0.4, 0.4 )
+texture = ExtResource( 4 )
+offset = Vector2( 0, -25 )
+
+[node name="AnimatableSprite" type="Sprite" parent="."]
+rotation = 1.5708
+scale = Vector2( 0.4, 0.4 )
+texture = ExtResource( 4 )
+offset = Vector2( 0, -25 )
+
+[node name="DefenceSurface" type="Area2D" parent="."]
+editor/display_folded = true
+visible = false
+collision_layer = 2
+collision_mask = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DefenceSurface"]
+shape = SubResource( 1 )
+
+[node name="DebugContainer" type="Node2D" parent="."]
+editor/display_folded = true
+visible = false
+
+[node name="Path2D" type="Path2D" parent="DebugContainer"]
+rotation = -1.5708
+curve = SubResource( 2 )
+
+[node name="Path2D2" type="Path2D" parent="DebugContainer"]
+curve = SubResource( 3 )
+
+[node name="BulletPointer" type="Position2D" parent="."]
+position = Vector2( 20, 0 )
+
+[node name="Tween" type="Tween" parent="."]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+playback_speed = 0.1
+anims/patrol = SubResource( 4 )
+[connection signal="area_entered" from="DefenceSurface" to="." method="_on_DefenceSurface_area_entered"]
+[connection signal="area_exited" from="DefenceSurface" to="." method="_on_DefenceSurface_area_exited"]
+[connection signal="body_entered" from="DefenceSurface" to="." method="_on_DefenceSurface_body_entered"]
+[connection signal="body_exited" from="DefenceSurface" to="." method="_on_DefenceSurface_body_exited"]

@@ -1,0 +1,29 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://Scenes/Weapons/Bullet/Bullet.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Scenes/Weapons/Rocket/Rocket.gd" type="Script" id=2]
+[ext_resource path="res://Scenes/Weapons/Rocket/FlameParticle.tscn" type="PackedScene" id=3]
+[ext_resource path="res://resources/tower-objects/missile-sm.png" type="Texture" id=4]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 5.25789, 11.358 )
+
+[node name="Rocket" index="0" instance=ExtResource( 1 )]
+script = ExtResource( 2 )
+
+[node name="FlameParticle" parent="." index="0" instance=ExtResource( 3 )]
+
+[node name="Sprite" parent="." index="1"]
+rotation = -1.5708
+texture = ExtResource( 4 )
+
+[node name="CollisionShape2D" parent="." index="2"]
+position = Vector2( 2, 0 )
+shape = SubResource( 1 )
+
+[node name="VisibilityNotifier2D" parent="." index="3"]
+position = Vector2( -0.255344, -0.12211 )
+scale = Vector2( 1.71642, 0.60471 )
+
+[node name="AudioStreamPlayer2D" parent="." index="4"]
+visible = false

@@ -1,0 +1,32 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://Scenes/Towers/Defense/Tower.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Scenes/Towers/Missile/Missile.gd" type="Script" id=2]
+[ext_resource path="res://Scenes/Weapons/Rocket/Rocket.tscn" type="PackedScene" id=3]
+[ext_resource path="res://resources/tower-objects/missile-under-2.png" type="Texture" id=4]
+[ext_resource path="res://resources/tower-objects/missile-1/missile-launcher-loaded.png" type="Texture" id=5]
+[ext_resource path="res://resources/tower-objects/missile-1/missile-launcher-empty.png" type="Texture" id=6]
+
+[node name="Missile" index="0" instance=ExtResource( 1 )]
+script = ExtResource( 2 )
+point = 5
+Bullet = ExtResource( 3 )
+
+[node name="sprite-missile-under" type="Sprite" parent="." index="0"]
+visible = false
+rotation = 1.5708
+scale = Vector2( 0.5, 0.5 )
+texture = ExtResource( 4 )
+
+[node name="sprite" parent="." index="1"]
+visible = false
+texture = ExtResource( 5 )
+
+[node name="AnimatableSprite" parent="." index="2"]
+texture = ExtResource( 5 )
+
+[node name="SpriteEmpty" type="Sprite" parent="." index="8"]
+visible = false
+rotation = 1.5708
+scale = Vector2( 0.5, 0.5 )
+texture = ExtResource( 6 )
