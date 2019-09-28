@@ -85,7 +85,7 @@ func on_enemy_reached_goal():
 	print("@todo enemy reached goal, reduce the castle strength.")
 	self.enemies_on_screen -= 1
 	emit_signal("request_camera_shake")
-
+ 
 func _on_BattleTimer_timeout():
 	ticks.Completed.BattleTimer += 1
 
