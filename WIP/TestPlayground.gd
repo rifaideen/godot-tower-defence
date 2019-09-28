@@ -89,17 +89,14 @@ func _on_BattleTimer_timeout():
 	if $EnemyTimer.is_stopped():
 		$EnemyTimer.start()
 
-
 func _on_IdleTimer_timeout():
 	$EnemyTimer.start()
 	$AudioAmbience.stop()
 	$AudioBattle.play()
 	$IdleTimer.queue_free()
 
-
-func _on_EndPosition_body_entered(body):
-	body.completed_goal()
-
+func _on_EndPosition_body_entered(enemy):
+	enemy.completed_goal()
 
 func _on_TimerFinalBattle_timeout():
 	$AudioAmbience.stop()
