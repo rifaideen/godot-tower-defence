@@ -12,7 +12,7 @@ Member variables
 #speed of the bullet
 export (int, 1,5) var speed = 3
 #the damage amount it causes to enemy
-export (int) var point = 5
+export (int) var damage_points = 5
 #firing delay in seconds
 export (float) var firing_delay_interval = 0
 #the bullet this tower uses
@@ -90,11 +90,9 @@ func load_bullet(_position):
 	bullet.connect("exited_screen", self, "reset_firing")
 
 	#setup the bullet properties
-	bullet.speed = self.speed
-	bullet.point = self.point
-	bullet.position = _position
-	bullet.direction = target.global_position - global_position
-	bullet.rotation_degrees = self.rotation_degrees
+	var direction = target.global_position - global_position
+	var _scale = Vector2(scale.x * 0.75, scale.y * 0.75)
+	bullet.init(_position, direction, self.rotation_degrees, self.speed, self.damage_points, _scale)
 	
 	#add the bullet
 	get_parent().add_child(bullet)

@@ -61,8 +61,8 @@ func update_paths():
 """
 * take damage, update progress bar and emit the signal when the health becomes zero
 """
-func take_damage(point):
-	health = max(0, health - point)
+func take_damage(damage_points):
+	health = max(0, health - damage_points)
 	$Node2D/TextureProgress.value = health
 
 	if health <= 0:
