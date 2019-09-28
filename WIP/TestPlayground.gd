@@ -15,7 +15,8 @@ Idea:
 extends Node2D
 
 export var number_of_enemies = 5
-onready var enemies_on_screen = 0
+onready var enemies_on_screen = 0 setget set_enemies_on_screen
+onready var enemies_spawned = 0
 
 var ticks = {
 	"BattleTimer": 3, 
@@ -31,7 +32,6 @@ var Tower : PackedScene = load("res://Scenes/Towers/Defense/Tower.tscn")
 export (Array, float) var tower_rotation_mapping = []
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass # Replace with function body.
 	var curve = $DefensePath.curve
 	for i in range(0, curve.get_point_count()):
 		var tower_placeholder = Tower.instance()#Placeholder.instance()
@@ -41,6 +41,14 @@ func _ready():
 			tower_placeholder.rotation = tower_rotation_mapping[i]
 		add_child(tower_placeholder)
 		
+func set_enemies_on_screen(value):
+	enemies_on_screen = value
+
+	if enemies_on_screen == 0:
+		$TimerFinalBattle.start()
+		$AudioBattle.stop()
+		$AudioAmbience.play()
+		
 
 func start_battle_timer(start: bool):
 	if start and ticks.Completed.BattleTimer < ticks.BattleTimer:
@@ -49,26 +57,31 @@ func start_battle_timer(start: bool):
 		$BattleTimer.stop()
 
 func _on_EnemyTimer_timeout():
-	if enemies_on_screen < number_of_enemies:
+	if enemies_spawned < number_of_enemies:
 		spawn_enemy()
 	else:
 		$EnemyTimer.stop()
-		enemies_on_screen = 0
+		enemies_spawned = 0
 		start_battle_timer(true)
 
 func spawn_enemy(local_position = Vector2.ZERO):
 	var enemy = Enemy.instance()
-	enemy.position = $EnemyStartPosition.global_position + local_position
-	enemy.goal = $EnemyEndPosition.global_position
-	enemy.navigation = $Navigation2D
 	enemy.scale = Vector2(0.5, 0.5)
+	enemy.path = $Path2D
+	enemy.position = $Path2D.curve.get_point_position(0)
 	enemy.connect("enemy_was_reached_goal", self, "on_enemy_reached_goal")
+	enemy.connect("enemy_was_died", self, "on_enemy_was_died")
 	add_child(enemy)
-	enemies_on_screen += 1
+	self.enemies_on_screen += 1
+	enemies_spawned += 1
 	
+
+func on_enemy_was_died(enemy):
+	self.enemies_on_screen -= 1
 
 func on_enemy_reached_goal():
 	print("@todo enemy reached goal, shake the screen or similar")
+	self.enemies_on_screen -= 1
 	#$Camera2D.shake = true
 func _on_BattleTimer_timeout():
 	ticks.Completed.BattleTimer += 1
@@ -76,9 +89,15 @@ func _on_BattleTimer_timeout():
 	if $EnemyTimer.is_stopped():
 		$EnemyTimer.start()
 
-
 func _on_IdleTimer_timeout():
 	$EnemyTimer.start()
 	$AudioAmbience.stop()
 	$AudioBattle.play()
 	$IdleTimer.queue_free()
+
+func _on_EndPosition_body_entered(enemy):
+	enemy.completed_goal()
+
+func _on_TimerFinalBattle_timeout():
+	$AudioAmbience.stop()
+	$AudioBattle.play()

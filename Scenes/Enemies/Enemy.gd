@@ -10,15 +10,15 @@ signal enemy_was_reached_goal
 
 export (int) var health = 100
 export (int) var speed = 25
-#Navigation2D object to find the path
-var navigation : Navigation2D = null setget set_navigation
-#paths from the 'navigation'
-var paths = []
-#end position / final destination
-var goal = Vector2()
-var velocity = Vector2.ZERO
 
-const DEFAULT_MASS = 2.0
+#the path to follow
+var path : Path2D setget set_path
+#paths from the 'Path2D'
+var paths = []
+#the movement vector
+var velocity = Vector2.ZERO
+#initial path index position
+var index = 0
 
 func _ready():
 	$Node2D/TextureProgress.max_value = health
@@ -26,49 +26,29 @@ func _ready():
 	$AnimationPlayer.play("walk")
 
 func _physics_process(delta):
-	#follow the paths
-	if paths.size() > 0:
-		var distance = position.distance_to(paths[0])
-		if distance > 2:
-			var desired_velocity = follow(velocity, global_position, paths[0])
-			velocity = move_and_slide(desired_velocity)
-			self.rotation = velocity.angle()
-			#position = lerp(position, paths[0], (speed * delta) / distance)
-			#self.look_at(paths[0])
-			"""
-			* Alternate approach
-			* 	position = position.linear_interpolate(paths[0], (speed * delta) / distance)
-			"""
-		else:
-			paths.remove(0)
-	else:
-		emit_signal("enemy_was_reached_goal")
-		queue_free()
-
-func follow(velocity, global_position, target_position, max_speed = speed, mass = DEFAULT_MASS):
-	var desired_velocity = (target_position - global_position).normalized() * max_speed
-	var steering = (desired_velocity - velocity) / mass
-
-	return velocity + steering
-
-"""
-* navigation property setter method
-"""
-func set_navigation(new_navigation):
-	navigation = new_navigation
-	update_paths()
-
-"""
-* update the paths
-"""
-func update_paths():
-	paths = navigation.get_simple_path(self.position, goal, true)
-
-	"""
-	* remove the enemy when the paths becomes zero.It means the enemy has reached it's goal.
-	"""
 	if paths.size() == 0:
-		queue_free()
+		return
+	var target = paths[index]
+	if position.distance_to(target) < 1:
+		index = min(index + 1, paths.size())
+		target = paths[index]
+	velocity = (target - position).normalized() * speed
+	velocity = move_and_slide(velocity)
+	var current_rotation = Vector2.RIGHT.rotated(rotation)
+	rotation = current_rotation.linear_interpolate(velocity, speed * delta).angle()
+
+func set_path(value):
+	path = value
+
+	if path != null:
+		paths = path.curve.get_baked_points()
+
+"""
+* Completed Goal, Emit the signal and free the enemy.
+"""
+func completed_goal():
+	emit_signal("enemy_was_reached_goal")
+	queue_free()
 
 """
 * take damage, update progress bar and emit the signal when the health becomes zero
