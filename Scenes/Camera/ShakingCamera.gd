@@ -6,8 +6,8 @@ export var amplitude : = 6.0
 export var duration : = 0.8 setget set_duration
 export(float, EASE) var DAMP_EASING : = 1.0
 export var shake : = false setget set_shake
+export var enabled : = false
 
-var enabled : = false
 
 func _ready() -> void:
 	randomize()
@@ -48,4 +48,4 @@ func set_shake(value: bool) -> void:
 
 func connect_to_shakers() -> void:
 	for camera_shaker in get_tree().get_nodes_in_group("camera_shaker"):
-		camera_shaker.connect("camera_shake_requested", self, "_on_camera_shake_requested")
+		camera_shaker.connect("request_camera_shake", self, "_on_camera_shake_requested")
