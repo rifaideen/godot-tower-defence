@@ -14,6 +14,8 @@ Idea:
 """
 extends Node2D
 
+signal request_camera_shake
+
 export var number_of_enemies = 5
 onready var enemies_on_screen = 0 setget set_enemies_on_screen
 onready var enemies_spawned = 0
@@ -80,9 +82,10 @@ func on_enemy_was_died(enemy):
 	self.enemies_on_screen -= 1
 
 func on_enemy_reached_goal():
-	print("@todo enemy reached goal, shake the screen or similar")
+	print("@todo enemy reached goal, reduce the castle strength.")
 	self.enemies_on_screen -= 1
-	#$Camera2D.shake = true
+	emit_signal("request_camera_shake")
+
 func _on_BattleTimer_timeout():
 	ticks.Completed.BattleTimer += 1
 

@@ -1,9 +1,10 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://WIP/TestPlayground.gd" type="Script" id=1]
 [ext_resource path="res://WIP/Autotile.tres" type="TileSet" id=2]
 [ext_resource path="res://resources/audio/battle-theme.ogg" type="AudioStream" id=3]
 [ext_resource path="res://resources/audio/ambience-jungle.ogg" type="AudioStream" id=4]
+[ext_resource path="res://Scenes/Camera/Camera.tscn" type="PackedScene" id=5]
 
 [sub_resource type="Curve2D" id=1]
 _data = {
@@ -18,7 +19,9 @@ _data = {
 [sub_resource type="RectangleShape2D" id=3]
 extents = Vector2( 29.9824, 10 )
 
-[node name="TestPlayground" type="Node2D"]
+[node name="TestPlayground" type="Node2D" groups=[
+"camera_shaker",
+]]
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_horizontal_guides_": [ 272.379 ],
@@ -86,6 +89,9 @@ __meta__ = {
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="EndPosition"]
 shape = SubResource( 3 )
+
+[node name="Camera" parent="." instance=ExtResource( 5 )]
+enabled = true
 [connection signal="timeout" from="EnemyTimer" to="." method="_on_EnemyTimer_timeout"]
 [connection signal="timeout" from="BattleTimer" to="." method="_on_BattleTimer_timeout"]
 [connection signal="timeout" from="IdleTimer" to="." method="_on_IdleTimer_timeout"]
